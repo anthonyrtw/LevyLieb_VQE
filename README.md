@@ -47,7 +47,7 @@ $\mathcal{I}_{N}$ refers to the set of allowable densities, and $\mathcal{W}_N$ 
 
 ```math
 \begin{equation}
-\mathcal{W}_N \equiv \left\{ \Psi \, | \, \Psi anti(symmetric), \langle \Psi | \Psi \rangle = 1, \langle \nabla_{i} \Psi | nabla_{i} Psi \rangle < \inf, \text{for} i = 1,...,N \right\}    
+\mathcal{W}_N \equiv \left\{ \Psi \, | \, \Psi \ anti(symmetric), \ \langle \Psi | \Psi \rangle = 1, \ \langle \nabla_{i} \Psi | \nabla_{i} \Psi \rangle < \inf, \ \text{for } i = 1,...,N \right\}    
 \end{equation}
 ```
 We will therefore calculate $F_{LL}(n)$ by minimising the expectation:
