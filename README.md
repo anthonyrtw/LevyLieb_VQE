@@ -1,20 +1,20 @@
 # Variational Quantum Eigensolvers - The Levy-Lieb Procedure
 
-This repository contains code for calculating the Levy-Lieb density functional, $F_{LL}(\mathbf{n})$ of a Hubbard dimer using a density-constrained Variational Quantum Eigensolver (VQE) and subsequently utilizing $F_{LL}(\mathbf{n})$ in the calculation of the ground energy. This work follows closely the theory and implementation outlined in Ref. 1.
+This repository contains code for calculating the Levy-Lieb density functional, $F_{LL}[n]$ of a Hubbard dimer using a density-constrained Variational Quantum Eigensolver (VQE) and subsequently utilizing $F_{LL}[n]$ in the calculation of the ground energy. Following this, the Levy-Lieb quantum kernel is defined and utilised, to demonstrate its efficacy in calculating $F_{LL}[n]$. This work follows closely the theory and implementation outlined in Ref. 1 and attempts to reproduce the main results.
 
 ## Packages Used
  - qiskit
  - qiskit_nature
  - qiskit_algorithms
+ - sklearn
  - numpy
  - matplotlib
- - tqdm
 
 ## Theoretical Background
 
 ### The Fermi Hubbard Model
 
-The Fermi-Hubbard Model is a lattice model in which electrons experience an interaction potential, on-site potential and can tunnel between lattice sites. Each site has two spin orbitals, corresponding to up and down. Therefore each site can possess a maximum of two electrons. In this project, we consider the two site Fermi-Hubbard lattice whose hamiltonian is as follows:
+The Fermi-Hubbard Model is a lattice model in which electrons experience an interaction potential, on-site potential and can tunnel between lattice sites. Each site has two spin orbitals, corresponding to up and down. Therefore, each site can possess a maximum of two electrons. In this project, we consider the two site Fermi-Hubbard lattice whose hamiltonian is as follows:
 
 ```math
 \begin{equation}
@@ -28,39 +28,39 @@ Where:
  - $U$ is the interaction term between two electrons occupying the same site.
  - $v_{i}$ is the on-site potential energy at site $i$
 
-We will refer the tunnelling term in the Hamiltonian, $\hat{T}$, the interaction potential term, $\hat{W}$, and the onsite potential term, $\hat{v}$
+We will refer to the tunnelling term in the Hamiltonian as $\hat{T}$, the interaction potential term as $\hat{W}$, and the onsite potential term, $\hat{v}$
 
 ### The Levy-Lieb Functional
 
-Now, we may introduce the Levy-lieb density functional:
+Now, we may introduce the Levy-Lieb density functional:
 ```math
 \begin{equation}
-    F_{LL}[n] \equiv \inf \left\{ \langle \Psi | \hat{T} + \hat{W} | \Psi \rangle \, \middle| \, \Psi \rightsquigarrow n, \Psi \in \mathcal{W}_N \right\}, \quad n \in \mathcal{I}_{N}
+F_{LL}[n] \equiv \inf \{ \langle \Psi | \hat{T} + \hat{W} | \Psi \rangle | \ \Psi \rightsquigarrow n, \ \Psi \in \mathcal{W}_N \}, \quad n \in \mathcal{I}_{N}
 \end{equation}
 ```
 $\mathcal{I}_{N}$ refers to the set of allowable densities, and $\mathcal{W}_N$ refers to the set of allowable wavefunctions, described by:
 
 ```math
 \begin{equation}
-\mathcal{I}_N \equiv \left\{ n \, | \, n \geq 0, \nabla n^{1/ 2} \in \mathcal{L}^2, \int dx \, n = N \right\}\end{equation}
+\mathcal{I}_N \equiv \{ n|n \geq 0, \ \nabla n^{1/ 2} \in \mathbf{L}^2, \ \int dx \ n = N \}
+\end{equation}
 ```
 
 ```math
 \begin{equation}
-\mathcal{W}_N \equiv \left\{ \Psi \, | \, \Psi \ anti(symmetric), \ \langle \Psi | \Psi \rangle = 1, \ \langle \nabla_{i} \Psi | \nabla_{i} \Psi \rangle < \inf, \ \text{for } i = 1,...,N \right\}    
+\mathcal{W}_N \equiv \left\{ \Psi | \Psi \ anti(symmetric), \ \ \langle \Psi | \Psi \rangle = 1, \ \ \langle \nabla_{i} \Psi | \nabla_{i} \Psi \rangle < \inf, \ \ \text{for } i = 1,...,N \right\}    
 \end{equation}
 ```
-We will therefore calculate $F_{LL}(n)$ by minimising the expectation:
+We will, therefore, calculate $F_{LL}(n)$ by minimising the expectation:
 ```math
 \begin{equation}
-\langle \Psi(t) \ | \ \hat{T} + \hat{W} \ | \ \Psi(t) \rangle
+\langle \Psi(t)  |  \hat{T} + \hat{W}  |  \Psi(t) \rangle
 \end{equation}
 ```
-where the parametrised state is determined by the ansatz: $|\Psi(t) \rangle = U(t) |\Psi_{i} \rangle$. The ansatz confines the solution to the correct number of particles, whether or not spin is conserved, etc. It does not however confine the solution to the correct density mapping, $\Psi \rightsquigarrow n$. Therefore, the minimisation procedure is constrained such that:
-Subject to the constraint 
+where the parametrised state, $|\Psi(t) \rangle$, is determined by the ansatz: $|\Psi(t) \rangle = U(t) |\Psi_{i} \rangle$. The ansatz confines the solution to the desired properties of our solution. e.g. the number of particles, the number of spin orbitals, whether or not spin is conserved, etc. It does not however confine the solution to the correct density mapping, $\Psi \rightsquigarrow n$. Therefore, the minimisation procedure is constrained such that:
 ```math
 \begin{equation}
-\|d\| \equiv \| \langle \Psi(t) | \hat{D} | \Psi(t) \rangle\ \|  = 0
+\|d\| \equiv \| \langle \Psi(t) | \hat{D} | \Psi(t) \rangle \|  = 0
 \end{equation}
 ```
 where  
@@ -69,16 +69,39 @@ where
 \mathbf{\hat{D}} \equiv \left[ \sum_{\sigma} \hat{c}^\dagger_{i\sigma} \hat{c}_{i\sigma} - n_i, \quad i = 1..M \right]
 \end{equation}
 ```
+This process also yields the Levy-Lieb embedding, $\Psi[n]$.
+
 
 ### Density variational minimisation
 
-The energy can be calculated as:
+The ground state energy can be calculated as:
+```math
+\begin{align*}
+E[\hat{v}] &= \min \{\langle \Psi | \hat{T} + \hat{W} + \hat{v} | \rangle, \ \Psi \in \mathcal{W_N}  \} \\
+
+&= \min \{ \inf\{\langle \Psi | \hat{T} + \hat{W} + \hat{v} | \rangle, \ \Psi \in \mathcal{W^{n}_{N}}  \}, \ n \in \mathcal{I_N} \} \\
+
+&= \min \{ F_{LL}[n] +   \int{dx v(x)n(x)}, \ n \in \mathcal{I_N} \}
+\end{align*}
+```
+
+Therefore, we can use a classical optimiser to minimise $F_{LL}(\mathbf{n}) + \mathbf{v} \cdot \mathbf{n}$. At the optimum value of $n$, we have the ground state.
+
+
+### The Levy-Lieb quantum kernel
+
+In this repository, we will also investigate the Levy-lieb kernel defined in Ref. 1 as:
 ```math
 \begin{equation}
-E[\mathbf{v}, \mathbf{n}] = F_{LL}[\mathbf{n}] + \mathbf{v} \cdot \mathbf{n}
+\kappa^{(U)}_{LL}(n_1, n_2) = || \ \langle \Psi^{(U)}_{LL}[n_1] \ | \ \Psi^{(U)}_{LL}[n_2] \rangle \ || ^{2}
 \end{equation}
 ```
-Therefore, by varying the density, $n$ such that $0 < n_i < 2$ and $n_1 + n_2 = 2$, we can calculate the minimum ground state of the Hubbard dimer.
+We will pre-compute the Levy-Lieb kernel matrix using states $\Psi^{(U)}_{LL}$ calculated from the density constrained VQE. We will use this kernel to re-construct the Levy-Lieb functional from a select training set using classical kernel ridge regression. We will also compare the efficacy of the Levy-Lieb kernel to the classical Gaussian kernel.
+```math
+\begin{equation}
+\kappa_G(n_1, n_2) = \frac{1}{2\sigma^2}\exp(-||n_1 - n_2||^2)
+\end{equation}
+```
 
 
 ## References
