@@ -3,12 +3,18 @@
 This repository contains code for calculating the Levy-Lieb density functional, $F_{LL}[n]$ of a Hubbard dimer using a density-constrained Variational Quantum Eigensolver (VQE) and subsequently utilizing $F_{LL}[n]$ in the calculation of the ground energy. Following this, the Levy-Lieb quantum kernel is defined and utilised, to demonstrate its efficacy in calculating $F_{LL}[n]$. This work follows closely the theory and implementation outlined in Ref. 1 and attempts to reproduce the main results.
 
 ## Packages Used
- - qiskit
- - qiskit_nature
- - qiskit_algorithms
- - sklearn
- - numpy
- - matplotlib
+ - qiskit 0.46.0
+ - qiskit_nature 0.7.1
+ - qiskit_algorithms 0.2.2
+ - scikit-learn 1.12.0
+ - numpy 1.23.5
+ - matplotlib 3.8.0
+ - scipy 1.12.0
+
+Alternatively, the packages used can run by:
+```bash
+pip install -r requirements.txt
+```
 
 ## Theoretical Background
 
