@@ -23,9 +23,7 @@ pip install -r requirements.txt
 The Fermi-Hubbard Model is a lattice model in which electrons experience an interaction potential, on-site potential and can tunnel between lattice sites. Each site has two spin orbitals, corresponding to up and down. Therefore, each site can possess a maximum of two electrons. In this project, we consider the two site Fermi-Hubbard lattice whose hamiltonian is as follows:
 
 ```math
-\begin{equation}
 \hat{H} = -t \sum_{\sigma=\uparrow,\downarrow} (c^\dagger_{1\sigma} c_{2\sigma} + \text{h.c.}) + U \sum_{i} \hat{n}_{i\uparrow} \hat{n}_{i\downarrow} + \sum_{i} v_i (\hat{n}_{i\uparrow} + \hat{n}_{i\downarrow}) 
-\end{equation}
 ```
 Where:
  - $\hat{c}_{i,\sigma}^\dagger$ and $\hat{c} _{i, \sigma}$ are the creation and annihilation operators for electrons with spin $\sigma$ at site $i$.
@@ -40,40 +38,28 @@ We will refer to the tunnelling term in the Hamiltonian as $\hat{T}$, the intera
 
 Now, we may introduce the Levy-Lieb density functional:
 ```math
-\begin{equation}
 F_{LL}[n] \equiv \inf \{ \langle \Psi | \hat{T} + \hat{W} | \Psi \rangle | \ \Psi \rightsquigarrow n, \ \Psi \in \mathcal{W}_N \}, \quad n \in \mathcal{I}_{N}
-\end{equation}
 ```
 $\mathcal{I}_{N}$ refers to the set of allowable densities, and $\mathcal{W}_N$ refers to the set of allowable wavefunctions, described by:
 
 ```math
-\begin{equation}
 \mathcal{I}_N \equiv \{ n|n \geq 0, \ \nabla n^{1/ 2} \in \mathbf{L}^2, \ \int dx \ n = N \}
-\end{equation}
 ```
 
 ```math
-\begin{equation}
 \mathcal{W}_N \equiv \left\{ \Psi | \Psi \ anti(symmetric), \ \ \langle \Psi | \Psi \rangle = 1, \ \ \langle \nabla_{i} \Psi | \nabla_{i} \Psi \rangle < \inf, \ \ \text{for } i = 1,...,N \right\}    
-\end{equation}
 ```
 We will, therefore, calculate $F_{LL}(n)$ by minimising the expectation:
 ```math
-\begin{equation}
-\langle \Psi(t)  |  \hat{T} + \hat{W}  |  \Psi(t) \rangle
-\end{equation}
+\langle \Psi(t) | \hat{T} + \hat{W} | \Psi(t) \rangle
 ```
 where the parametrised state, $|\Psi(t) \rangle$, is determined by the ansatz: $|\Psi(t) \rangle = U(t) |\Psi_{i} \rangle$. The ansatz confines the solution to the desired properties of our solution. e.g. the number of particles, the number of spin orbitals, whether or not spin is conserved, etc. It does not however confine the solution to the correct density mapping, $\Psi \rightsquigarrow n$. Therefore, the minimisation procedure is constrained such that:
 ```math
-\begin{equation}
 \|d\| \equiv \| \langle \Psi(t) | \hat{D} | \Psi(t) \rangle \|  = 0
-\end{equation}
 ```
 where  
 ```math
-\begin{equation}
 \mathbf{\hat{D}} \equiv \left[ \sum_{\sigma} \hat{c}^\dagger_{i\sigma} \hat{c}_{i\sigma} - n_i, \quad i = 1..M \right]
-\end{equation}
 ```
 This process also yields the Levy-Lieb embedding, $\Psi[n]$.
 
@@ -87,7 +73,7 @@ E[\hat{v}] &= \min \{\langle \Psi | \hat{T} + \hat{W} + \hat{v} | \rangle, \ \Ps
 
 &= \min \{ \inf\{\langle \Psi | \hat{T} + \hat{W} + \hat{v} | \rangle, \ \Psi \in \mathcal{W^{n}_{N}}  \}, \ n \in \mathcal{I_N} \} \\
 
-&= \min \{ F_{LL}[n] +   \int{dx v(x)n(x)}, \ n \in \mathcal{I_N} \}
+&= \min \{ F_{LL}[n] +   \int{dx \ v(x)n(x)}, \ n \in \mathcal{I_N} \}
 \end{align*}
 ```
 
@@ -98,15 +84,11 @@ Therefore, we can use a classical optimiser to minimise $F_{LL}(\mathbf{n}) + \m
 
 In this repository, we will also investigate the Levy-lieb kernel defined in Ref. 1 as:
 ```math
-\begin{equation}
-\kappa^{(U)}_{LL}(n_1, n_2) = || \ \langle \Psi^{(U)}_{LL}[n_1] \ | \ \Psi^{(U)}_{LL}[n_2] \rangle \ || ^{2}
-\end{equation}
+\kappa^{(U)}_{LL}(n_1, n_2) = \| \langle \Psi^{(U)}_{LL}[n_1] | \Psi^{(U)}_{LL}[n_2] \rangle \| ^{2}
 ```
 We will pre-compute the Levy-Lieb kernel matrix using states $\Psi^{(U)}_{LL}$ calculated from the density constrained VQE. We will use this kernel to re-construct the Levy-Lieb functional from a select training set using classical kernel ridge regression. We will also compare the efficacy of the Levy-Lieb kernel to the classical Gaussian kernel.
 ```math
-\begin{equation}
-\kappa_G(n_1, n_2) = \frac{1}{2\sigma^2}\exp(-||n_1 - n_2||^2)
-\end{equation}
+\kappa_G(n_1, n_2) = \frac{1}{2\sigma^2} \ e^{-\|n_1 - n_2\|^2}
 ```
 
 
